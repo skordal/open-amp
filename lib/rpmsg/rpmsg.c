@@ -240,8 +240,7 @@ int rpmsg_init_vdev(struct rpmsg_virtio_device *rvdev,
 			return -RPMSG_ERR_NO_MEM;
 
 		rvdev->shbuf =
-		    sh_mem_create_pool(rp_shm->va, rp_shm->size,
-				       RPMSG_BUFFER_SIZE);
+		    sh_mem_create_pool(shm, len, RPMSG_BUFFER_SIZE);
 
 		if (!rvdev->shbuf)
 			return RPMSG_ERR_NO_MEM;

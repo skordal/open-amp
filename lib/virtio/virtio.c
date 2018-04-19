@@ -96,7 +96,7 @@ int virtio_create_virtqueues(struct virtio_device *vdev, unsigned int flags,
 	/* Initialize virtqueue for each vring */
 	for (i = 0; i < nvqs; i++) {
 		rvring = &vdev->rvrings[i];
-		if (vdev->role == VIRTIO_DEV_HOST) {
+		if (vdev->role == VIRTIO_DEV_GUEST) {
 			size_t offset;
 			struct metal_io_region *io = rvring->io;
 			unsigned int num_descs = rvring->num_descs;
