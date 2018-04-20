@@ -103,14 +103,14 @@ int rpmsg_start_ipc(struct remote_device *rdev)
 	}
 
 	/* Create virtqueues for remote device */
-	status = virt_dev->func->create_virtqueues(virt_dev, 0,
-						   RPMSG_MAX_VQ_PER_RDEV,
-						   vq_names, callback,
-						   RPMSG_NULL);
+	status = rpmsg_rdev_create_virtqueues(virt_dev, 0,
+					      RPMSG_MAX_VQ_PER_RDEV,
+					      vq_names, callback,
+					      RPMSG_NULL);
 	if (status != RPMSG_SUCCESS)
 		return status;
 
-	dev_features = virt_dev->func->get_features(virt_dev);
+	dev_features = rpmsg_rdev_get_feature(virt_dev);
 
 	/*
 	 * Create name service announcement endpoint if device supports name
@@ -141,7 +141,7 @@ int rpmsg_start_ipc(struct remote_device *rdev)
 	}
 
 	if (rdev->role == RPMSG_REMOTE) {
-		virt_dev->func->set_status(virt_dev,
+		rpmsg_rdev_set_status(virt_dev,
 			VIRTIO_CONFIG_STATUS_DRIVER_OK);
 		status = rpmsg_rdev_notify(rdev);
 	}

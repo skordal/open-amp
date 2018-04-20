@@ -41,19 +41,6 @@
 /* Local functions */
 static int rpmsg_rdev_init_channels(struct remote_device *rdev);
 
-/* Ops table for virtio device */
-virtio_dispatch rpmsg_rdev_config_ops = {
-	rpmsg_rdev_create_virtqueues,
-	rpmsg_rdev_get_status,
-	rpmsg_rdev_set_status,
-	rpmsg_rdev_get_feature,
-	rpmsg_rdev_set_feature,
-	rpmsg_rdev_negotiate_feature,
-	rpmsg_rdev_read_config,
-	rpmsg_rdev_write_config,
-	rpmsg_rdev_reset
-};
-
 /**
  * rpmsg_memb_match
  *
@@ -137,10 +124,7 @@ int rpmsg_rdev_init(struct hil_proc *proc,
 	/* Initialize the virtio device */
 	virt_dev = &rdev_loc->virt_dev;
 	virt_dev->device = proc;
-	virt_dev->func = &rpmsg_rdev_config_ops;
-	if (virt_dev->func->set_features != RPMSG_NULL) {
-		virt_dev->func->set_features(virt_dev, proc->vdev.dfeatures);
-	}
+	rpmsg_rdev_set_feature(virt_dev, proc->vdev.dfeatures);
 
 	if (rdev_loc->role == RPMSG_REMOTE) {
 		/*
@@ -367,7 +351,7 @@ int rpmsg_rdev_remote_ready(struct remote_device *rdev)
 	uint8_t status;
 	if (rdev->role == RPMSG_MASTER) {
 		while (1) {
-			status = vdev->func->get_status(vdev);
+			status = rpmsg_rdev_get_status(vdev);
 			/* Busy wait until the remote is ready */
 			if (status & VIRTIO_CONFIG_STATUS_NEEDS_RESET) {
 				rpmsg_rdev_set_status(vdev, 0);

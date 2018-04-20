@@ -51,8 +51,6 @@ extern "C" {
 #define VIRTIO_TRANSPORT_F_START      28
 #define VIRTIO_TRANSPORT_F_END        32
 
-typedef struct _virtio_dispatch_ virtio_dispatch;
-
 struct virtio_feature_desc {
 	uint32_t vfd_val;
 	const char *vfd_str;
@@ -82,9 +80,6 @@ struct virtio_device {
 	/* Virtio device specific features */
 	uint32_t features;
 
-	/* Virtio dispatch table */
-	virtio_dispatch *func;
-
 	/*
 	 * Pointer to hold some private data, useful
 	 * in callbacks.
@@ -99,37 +94,6 @@ const char *virtio_dev_name(uint16_t devid);
 void virtio_describe(struct virtio_device *dev, const char *msg,
 		     uint32_t features,
 		     struct virtio_feature_desc *feature_desc);
-
-/*
- * Functions for virtio device configuration as defined in Rusty Russell's paper.
- * Drivers are expected to implement these functions in their respective codes.
- * 
- */
-
-struct _virtio_dispatch_ {
-	int (*create_virtqueues) (struct virtio_device * dev, int flags,
-				  int nvqs, const char *names[],
-				  vq_callback * callbacks[],
-				  struct virtqueue * vqs[]);
-	uint8_t(*get_status) (struct virtio_device * dev);
-	void (*set_status) (struct virtio_device * dev, uint8_t status);
-	uint32_t(*get_features) (struct virtio_device * dev);
-	void (*set_features) (struct virtio_device * dev, uint32_t feature);
-	uint32_t(*negotiate_features) (struct virtio_device * dev,
-				       uint32_t features);
-
-	/*
-	 * Read/write a variable amount from the device specific (ie, network)
-	 * configuration region. This region is encoded in the same endian as
-	 * the guest.
-	 */
-	void (*read_config) (struct virtio_device * dev, uint32_t offset,
-			     void *dst, int length);
-	void (*write_config) (struct virtio_device * dev, uint32_t offset,
-			      void *src, int length);
-	void (*reset_device) (struct virtio_device * dev);
-
-};
 
 #if defined __cplusplus
 }
