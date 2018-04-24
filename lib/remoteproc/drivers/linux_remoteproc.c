@@ -30,7 +30,6 @@
 #include <metal/cpu.h>
 #include <metal/alloc.h>
 #include <metal/assert.h>
-#include <metal/shmem.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <openamp/hil.h>

@@ -28,7 +28,6 @@
 #include <metal/alloc.h>
 #include <metal/assert.h>
 #include <metal/device.h>
-#include <metal/shmem.h>
 #include <metal/utilities.h>
 #include <metal/time.h>
 #include <metal/cache.h>
@@ -602,12 +601,8 @@ int hil_set_shm (struct hil_proc *proc,
 			return ret;
 		proc->sh_buff.dev = dev;
 		proc->sh_buff.io = NULL;
-	} else if (name) {
-		ret = metal_shmem_open(name, size, &io);
-		if (ret)
-			return ret;
-		proc->sh_buff.io = io;
 	}
+
 	if (!size) {
 		if (proc->sh_buff.io) {
 			io = proc->sh_buff.io;
@@ -686,11 +681,6 @@ int hil_set_rsc (struct hil_proc *proc,
 		if (!io)
 			return -1;
 		proc->rsc_io = io;
-	} else if (name) {
-		ret = metal_shmem_open(name, size, &io);
-		if (ret)
-			return ret;
-		proc->rsc_io = io;
 	} else {
 		if (proc->rsc_dev || proc->rsc_io)
 			return 0;
@@ -723,11 +713,6 @@ int hil_set_vring (struct hil_proc *proc, int index,
 		if (ret)
 			return ret;
 		vring->dev = dev;
-	} else if (name) {
-		ret = metal_shmem_open(name, size, &io);
-		if (ret)
-			return ret;
-		vring->io = io;
 	} else {
 		if (vring->dev) {
 			dev = vring->dev;
